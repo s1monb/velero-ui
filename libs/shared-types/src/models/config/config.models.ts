@@ -76,6 +76,7 @@ export interface GitlabConfig {
   scopes: string;
   redirectUri: string;
   baseUrl: string;
+  searchTerm?: string;
 }
 
 export interface OauthConfig {

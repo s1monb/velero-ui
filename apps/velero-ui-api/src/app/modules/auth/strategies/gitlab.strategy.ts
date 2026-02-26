@@ -28,6 +28,7 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
       scope: configService.get('gitlab.scopes'),
       callbackURL: configService.get('gitlab.redirectUri'),
       baseURL: configService.get('gitlab.baseUrl'),
+      searchTerm: configService.get('gitlab.searchTerm'),
     });
   }
 
@@ -55,7 +56,7 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
       const groupsWithRoles = await lastValueFrom(
         this.getUserGroupsWithRoles(accessToken)
       );
-
+      
       for (const group of groupsWithRoles) {
         groups.push(group.fullPath);
         if (group.accessLevel !== 'unknown') {
@@ -83,8 +84,12 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
   }
 
   private getUserGroupsWithRoles(accessToken: string) {
+    const url = new URL('/api/v4/groups', this.configService.get('gitlab.baseUrl'))
+
+    if (this.configService.get('gitlab.searchTerm')) url.searchParams.append('search', this.configService.get('gitlab.searchTerm'));
+
     return this.httpService
-      .get('https://gitlab.com/api/v4/groups', {
+      .get(url.toString(), {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
