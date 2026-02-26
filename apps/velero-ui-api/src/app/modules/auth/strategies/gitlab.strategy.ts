@@ -57,9 +57,9 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
       );
 
       for (const group of groupsWithRoles) {
-        groups.push(group.name);
+        groups.push(group.fullPath);
         if (group.accessLevel !== 'unknown') {
-          groups.push(`${ group.name }:${ group.accessLevel }`);
+          groups.push(`${ group.fullPath }:${ group.accessLevel }`);
         }
       }
     }
