@@ -56,7 +56,7 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
       const groupsWithRoles = await lastValueFrom(
         this.getUserGroupsWithRoles(accessToken)
       );
-      
+
       for (const group of groupsWithRoles) {
         groups.push(group.fullPath);
         if (group.accessLevel !== 'unknown') {
@@ -67,6 +67,11 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
 
     this.logger.info(
       `Federated Gitlab user ${id} signed in.`,
+      GitlabStrategy.name
+    );
+
+    this.logger.debug(
+      `User ${id} belongs to groups: ${groups.join(', ')}`,
       GitlabStrategy.name
     );
 
@@ -92,6 +97,12 @@ export class GitlabStrategy extends PassportStrategy(Strategy, 'gitlab') {
       url.searchParams.append('page', page.toString());
       url.searchParams.append('per_page', '100');
       if (searchTerm) url.searchParams.append('search', searchTerm);
+
+      this.logger.debug(
+        `Url created: ${url.toString()}`,
+        GitlabStrategy.name
+      );
+
       return url.toString();
     };
 
